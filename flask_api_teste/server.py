@@ -37,8 +37,9 @@ def insert_sensor_data(data):
     try:
         conn = create_connection()
         cursor = conn.cursor()
-        query = "INSERT INTO sensores(umidade,pressao,temperatura,gas,agua) VALUES (%s,%s,%s,%s,%s)"
-        cursor.execute(query, (data['umidade'],data['pressao'],data['temperatura'],data['gas'], data['agua']))
+        query = "INSERT INTO sensores(umidade,pressao,temperatura) VALUES (%s,%s,%s)"
+        cursor.execute(query, (data['umidade'],data['pressao'],data['temperatura']))
+
         conn.commit()
     except mysql.connector.Error as err:
         print(f"Error: {err}")
