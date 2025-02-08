@@ -35,9 +35,9 @@ async function atualizarSensores() {
 
     //atualiza os valores exibidosa na pagina
 
-    const now = new Date().toLocaleTimeString();
+  
 
-    chart.data.labels.push(now);
+    chart.data.labels.push(data.data);
     chart.data.datasets[0].data.push(data.temperatura);
     chart.data.datasets[1].data.push(data.umidade);
     chart.data.datasets[2].data.push(data.pressao);
