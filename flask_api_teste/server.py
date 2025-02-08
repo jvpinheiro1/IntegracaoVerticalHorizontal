@@ -5,6 +5,7 @@ import mysql.connector
 import datetime 
 
 
+
 app=Flask(__name__) 
 
 
@@ -20,10 +21,11 @@ def create_connection():
 
 def get_sensor_data():
     data ={
+        "data": datetime.datetime.now(),
         "temperatura":round(random.uniform(20,80),2),
-        "umidade":round(random.uniform(30,90),2),
+        "umidade":round(random.uniform(30,600),2),
         "pressao":round(random.uniform(900,1100),2),
-        "gas":round(random.uniform(90,30),2),
+        "gas":round(random.uniform(400,1000),2),
         "agua":round(random.uniform(600,800),2),
         "data": datetime.datetime.now()
     }
