@@ -21,6 +21,8 @@ const chart = new Chart(ctx, {
   },
 });
 
+let intervalId = setInterval(atualizarSensores, 2000);
+
 async function atualizarSensores() {
   try {
     const response = await fetch('http://127.0.0.1:5000/sensores');
@@ -33,8 +35,7 @@ async function atualizarSensores() {
     document.getElementById('gas').innerText = data.gas;
     document.getElementById('agua').innerText = data.agua;
 
-    //atualiza os valores exibidosa na pagina
-
+    // Atualiza os valores exibidos na página
     const now = new Date().toLocaleTimeString();
 
     chart.data.labels.push(now);
@@ -44,15 +45,25 @@ async function atualizarSensores() {
     chart.data.datasets[3].data.push(data.gas);
     chart.data.datasets[4].data.push(data.agua);
 
-    if (chart.data.labels.lenght > 10) {
+    if (chart.data.labels.length > 10) {
       chart.data.labels.shift();
       chart.data.datasets.forEach((dataset) => dataset.data.shift());
     }
-    //atualiza o grafico na tela
+    // Atualiza o gráfico na tela
     chart.update();
   } catch (error) {
     console.error('Erro ao buscar dados: ', error);
   }
 }
 
-setInterval(atualizarSensores, 2000);
+document.getElementById('pauseBtn').addEventListener('click', () => {
+  clearInterval(intervalId);
+  document.getElementById('pauseBtn').style.display = 'none';
+  document.getElementById('resumeBtn').style.display = 'inline-block';
+});
+
+document.getElementById('resumeBtn').addEventListener('click', () => {
+  intervalId = setInterval(atualizarSensores, 2000);
+  document.getElementById('resumeBtn').style.display = 'none';
+  document.getElementById('pauseBtn').style.display = 'inline-block';
+});

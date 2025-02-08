@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 import random
 import mysql.connector
-
+import datetime
 
 
 app=Flask(__name__) 
@@ -21,6 +21,7 @@ def create_connection():
 
 def get_sensor_data():
     data ={
+        "data": datetime.datetime.now(),
         "temperatura":round(random.uniform(20,80),2),
         "umidade":round(random.uniform(30,90),2),
         "pressao":round(random.uniform(900,1100),2),
@@ -37,8 +38,8 @@ def insert_sensor_data(data):
     try:
         conn = create_connection()
         cursor = conn.cursor()
-        query = "INSERT INTO sensores(umidade,pressao,temperatura) VALUES (%s,%s,%s)"
-        cursor.execute(query, (data['umidade'],data['pressao'],data['temperatura']))
+        query = "INSERT INTO sensores(data,umidade,pressao,temperatura,gas,agua) VALUES (%s,%s,%s,%s,%s,%s)"
+        cursor.execute(query, (data['data'],data['umidade'],data['pressao'],data['temperatura'],data['gas'],data['agua']))
 
         conn.commit()
     except mysql.connector.Error as err:
