@@ -21,11 +21,11 @@
   </section>
 
   <section>
-    <h2>Produção - Registrar Etapa de Montagem</h2>
-    <input type="text" id="ordem_id_etapa" placeholder="ID da Ordem">
-    <input type="text" id="descricao_etapa" placeholder="Descrição da Etapa">
-    <button onclick="registrarEtapa()">Registrar Etapa</button>
-    <ul id="etapas"></ul>
+    <h2>Produção - Adicionar Etapa</h2>
+    <input type="number" id="etapa_ordem_id" placeholder="ID da Ordem">
+    <input type="text" id="etapa_descricao" placeholder="Descrição da Etapa">
+    <input type="text" id="etapa_status" placeholder="Status da Etapa">
+    <button onclick="adicionarEtapa()">Adicionar Etapa</button>
   </section>
 
   <section>
@@ -42,16 +42,8 @@
     <input type="text" id="codigo_peca" placeholder="Código">
     <input type="text" id="descricao_peca" placeholder="Descrição">
     <input type="text" id="vin" placeholder="VIN do veículo">
-    <input type="date" id="data_entrada" placeholder="Data de Entrada">
     <button onclick="registrarPeca()">Registrar</button>
     <ul id="pecas"></ul>
-  </section>
-
-  <section>
-    <h2>Peças - Buscar Componentes por VIN</h2>
-    <input type="text" id="vin_busca" placeholder="VIN do veículo">
-    <button onclick="buscarPecasPorVin()">Buscar</button>
-    <ul id="pecas_por_vin"></ul>
   </section>
 
   <section>
@@ -78,19 +70,21 @@
       ul.innerHTML = '';
       dados.forEach(o => {
         const li = document.createElement('li');
-        li.textContent = `ID: ${o.id}, Modelo: ${o.modelo}, Status: ${o.status}`;
+        li.innerHTML = `<strong>ID:</strong> ${o.id}, <strong>Modelo:</strong> ${o.modelo}, <strong>Status:</strong> ${o.status}<br><strong>Etapas:</strong> <ul>${o.etapas.map(e => `<li>${e.descricao} - ${e.status}</li>`).join('')}</ul>`;
         ul.appendChild(li);
       });
     }
 
-    async function registrarEtapa() {
-      const ordem_id = document.getElementById('ordem_id_etapa').value;
-      const descricao = document.getElementById('descricao_etapa').value;
-      await fetch('http://localhost:5001/ordens/' + ordem_id + '/etapas', {
+    async function adicionarEtapa() {
+      const ordem_id = document.getElementById('etapa_ordem_id').value;
+      const descricao = document.getElementById('etapa_descricao').value;
+      const status = document.getElementById('etapa_status').value;
+      await fetch(`http://localhost:5001/ordens/${ordem_id}/etapas`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ descricao })
+        body: JSON.stringify({ descricao, status })
       });
+      listarOrdens();
     }
 
     async function registrarInspecao() {
@@ -121,11 +115,10 @@
       const codigo = document.getElementById('codigo_peca').value;
       const descricao = document.getElementById('descricao_peca').value;
       const vin = document.getElementById('vin').value;
-      const data_entrada = document.getElementById('data_entrada').value;
       await fetch('http://localhost:5003/entrada', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ codigo, descricao, vin, data_entrada })
+        body: JSON.stringify({ codigo, descricao, vin })
       });
       listarPecas();
     }
@@ -137,20 +130,7 @@
       ul.innerHTML = '';
       dados.forEach(p => {
         const li = document.createElement('li');
-        li.textContent = `Código: ${p.codigo}, Descrição: ${p.descricao}, VIN: ${p.vin}, Entrada: ${p.data_entrada}`;
-        ul.appendChild(li);
-      });
-    }
-
-    async function buscarPecasPorVin() {
-      const vin = document.getElementById('vin_busca').value;
-      const resp = await fetch('http://localhost:5003/entrada/' + vin);
-      const dados = await resp.json();
-      const ul = document.getElementById('pecas_por_vin');
-      ul.innerHTML = '';
-      dados.forEach(p => {
-        const li = document.createElement('li');
-        li.textContent = `Código: ${p.codigo}, Descrição: ${p.descricao}, Entrada: ${p.data_entrada}`;
+        li.textContent = `Código: ${p.codigo}, Descrição: ${p.descricao}, VIN: ${p.vin}`;
         ul.appendChild(li);
       });
     }
