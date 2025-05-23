@@ -1,39 +1,24 @@
 from flask import Flask, request, jsonify
-import uuid
-import requests
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 inspecoes = []
 
-@app.route('/inspecao', methods=['POST'])
-def registrar_inspecao():
-    dados = request.get_json()
-    inspecao = {
-        'id': str(uuid.uuid4()),
-        'ordem_id': dados['ordem_id'],
-        'descricao': dados['descricao'],
-        'conforme': dados['conforme']
-    }
-    inspecoes.append(inspecao)
-
-    # Integração com Certificadora se não conforme
-    if not inspecao['conforme']:
-        resposta = requests.post('http://certificadora:5000/verificar', json={
-            'descricao': inspecao['descricao']
-        })
-        inspecao['certificadora'] = resposta.json()
-
-    return jsonify(inspecao), 201
-
-@app.route('/inspecao', methods=['GET'])
-def listar_inspecoes():
-    return jsonify(inspecoes)
-
-@app.route('/nao-conformidades', methods=['GET'])
-def listar_falhas():
-    falhas = [i for i in inspecoes if not i['conforme']]
-    return jsonify(falhas)
+@app.route('/inspecao', methods=['GET', 'POST'])
+def inspecao_handler():
+    if request.method == 'POST':
+        data = request.json
+        inspecao = {
+            'ordem_id': int(data.get('ordem_id')),
+            'descricao': data.get('descricao'),
+            'conforme': data.get('conforme', False)
+        }
+        inspecoes.append(inspecao)
+        return jsonify(inspecao), 201
+    else:
+        return jsonify(inspecoes)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002)

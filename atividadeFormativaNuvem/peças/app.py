@@ -1,26 +1,24 @@
 from flask import Flask, request, jsonify
-import uuid
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-pecas_usadas = []
+pecas = []
 
-@app.route('/entrada', methods=['POST'])
-def registrar_entrada():
-    dados = request.get_json()
-    peca = {
-        'id': str(uuid.uuid4()),
-        'codigo': dados['codigo'],
-        'descricao': dados['descricao'],
-        'vin': dados['vin']
-    }
-    pecas_usadas.append(peca)
-    return jsonify(peca), 201
-
-@app.route('/rastreio/<vin>', methods=['GET'])
-def rastrear_pecas(vin):
-    usadas = [p for p in pecas_usadas if p['vin'] == vin]
-    return jsonify(usadas)
+@app.route('/entrada', methods=['GET', 'POST'])
+def entrada_handler():
+    if request.method == 'POST':
+        data = request.json
+        peca = {
+            'codigo': data.get('codigo'),
+            'descricao': data.get('descricao'),
+            'vin': data.get('vin')
+        }
+        pecas.append(peca)
+        return jsonify(peca), 201
+    else:
+        return jsonify(pecas)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5003)

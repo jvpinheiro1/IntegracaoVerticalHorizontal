@@ -1,38 +1,27 @@
 from flask import Flask, request, jsonify
-from datetime import datetime
-import uuid
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-# Banco de dados em memória (dicionário)
-ordens_producao = {}
+ordens = []
+next_id = 1
 
-# Endpoint para criar nova ordem de produção
-@app.route('/ordens', methods=['POST'])
-def criar_ordem():
-    dados = request.get_json()
-    ordem_id = str(uuid.uuid4())
-    nova_ordem = {
-        'id': ordem_id,
-        'modelo': dados.get('modelo'),
-        'status': 'em andamento',
-        'inicio': datetime.utcnow().isoformat()
-    }
-    ordens_producao[ordem_id] = nova_ordem
-    return jsonify(nova_ordem), 201
-
-# Endpoint para listar todas as ordens
-@app.route('/ordens', methods=['GET'])
-def listar_ordens():
-    return jsonify(list(ordens_producao.values()))
-
-# Endpoint para obter detalhes de uma ordem específica
-@app.route('/ordens/<ordem_id>', methods=['GET'])
-def obter_ordem(ordem_id):
-    ordem = ordens_producao.get(ordem_id)
-    if not ordem:
-        return jsonify({'erro': 'Ordem não encontrada'}), 404
-    return jsonify(ordem)
+@app.route('/ordens', methods=['GET', 'POST'])
+def ordens_handler():
+    global next_id
+    if request.method == 'POST':
+        data = request.json
+        ordem = {
+            'id': next_id,
+            'modelo': data.get('modelo'),
+            'status': 'Em produção'
+        }
+        next_id += 1
+        ordens.append(ordem)
+        return jsonify(ordem), 201
+    else:
+        return jsonify(ordens)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5001)
