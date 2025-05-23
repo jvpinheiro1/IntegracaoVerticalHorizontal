@@ -1,0 +1,73 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: banco
+      MYSQL_USER: senai123
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  producao:
+    build: ./producao
+    container_name: producao_service
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      MYSQL_USER: senai123
+      MYSQL_PASSWORD: 123456
+      MYSQL_DB: banco
+      MYSQL_HOST: db
+    depends_on:
+      - db
+
+  qualidade:
+    build: ./qualidade
+    container_name: qualidade_service
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      MYSQL_USER: senai123
+      MYSQL_PASSWORD: 123456
+      MYSQL_DB: banco
+      MYSQL_HOST: db
+    depends_on:
+      - db
+
+  pecas:
+    build: ./pecas
+    container_name: pecas_service
+    restart: always
+    ports:
+      - "5003:5003"
+    environment:
+      MYSQL_USER: senai123
+      MYSQL_PASSWORD: 123456
+      MYSQL_DB: banco
+      MYSQL_HOST: db
+    depends_on:
+      - db
+
+  relatorios:
+    build: ./relatorios
+    container_name: relatorios_service
+    restart: always
+    ports:
+      - "5004:5004"
+    environment:
+      MYSQL_USER: senai123
+      MYSQL_PASSWORD: 123456
+      MYSQL_DB: banco
+      MYSQL_HOST: db
+    depends_on:
+      - db
+
+volumes:
+  db_data:

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Serviço de Produção</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    input, button { margin: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Produção</h1>
+  <h2>Nova Ordem</h2>
+  <input type="text" id="modelo" placeholder="Modelo do veículo">
+  <button onclick="criarOrdem()">Criar</button>
+
+  <h2>Ordens</h2>
+  <ul id="lista"></ul>
+
+  <script>
+    async function criarOrdem() {
+      const modelo = document.getElementById('modelo').value;
+      const resp = await fetch('/ordens', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ modelo })
+      });
+      listarOrdens();
+    }
+
+    async function listarOrdens() {
+      const resp = await fetch('/ordens');
+      const dados = await resp.json();
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';
+      dados.forEach(o => {
+        const li = document.createElement('li');
+        li.textContent = `ID: ${o.id} | Modelo: ${o.modelo} | Status: ${o.status}`;
+        lista.appendChild(li);
+      });
+    }
+
+    listarOrdens();
+  </script>
+</body>
+</html>
