@@ -1,11 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Serviço de Peças</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    input, button { margin: 5px; }
+  </style>
 </head>
 <body>
-    
+  <h1>Peças</h1>
+  <h2>Registrar Peça</h2>
+  <input type="text" id="codigo" placeholder="Código">
+  <input type="text" id="descricao" placeholder="Descrição">
+  <input type="text" id="vin" placeholder="VIN do veículo">
+  <button onclick="registrar()">Registrar</button>
+
+  <h2>Peças Registradas</h2>
+  <ul id="lista"></ul>
+
+  <script>
+    async function registrar() {
+      const codigo = document.getElementById('codigo').value;
+      const descricao = document.getElementById('descricao').value;
+      const vin = document.getElementById('vin').value;
+      await fetch('/entrada', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo, descricao, vin })
+      });
+      listar();
+    }
+
+    async function listar() {
+      const resp = await fetch('/entrada');
+      const dados = await resp.json();
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';
+      dados.forEach(p => {
+        const li = document.createElement('li');
+        li.textContent = `Código: ${p.codigo} | Desc: ${p.descricao} | VIN: ${p.vin}`;
+        lista.appendChild(li);
+      });
+    }
+
+    listar();
+  </script>
 </body>
 </html>

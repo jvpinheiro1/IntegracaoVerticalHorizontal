@@ -1,11 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Relatórios</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+  </style>
 </head>
 <body>
-    
+  <h1>Dashboard de Relatórios</h1>
+  <button onclick="atualizar()">Atualizar</button>
+  <pre id="resultado"></pre>
+
+  <script>
+    async function atualizar() {
+      const resp = await fetch('/dashboard');
+      const dados = await resp.json();
+      const pre = document.getElementById('resultado');
+      pre.textContent = JSON.stringify(dados, null, 2);
+    }
+
+    atualizar();
+  </script>
 </body>
 </html>
