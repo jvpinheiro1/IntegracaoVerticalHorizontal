@@ -1,34 +1,33 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import uuid
 
 app = Flask(__name__)
+CORS(app)
 
-# Armazenamento simples em memória
-pecas_usadas = []
+componentes = []
 
 @app.route('/entrada', methods=['POST'])
-def registrar_entrada():    
-    dados = request.get_json()
-
-    if not dados or not all(k in dados for k in ('codigo', 'descricao', 'vin')):
-        return jsonify({'erro': 'Dados incompletos. Esperado: codigo, descricao, vin'}), 400
-
-    peca = {
-        'id': str(uuid.uuid4()),
-        'codigo': dados['codigo'],
-        'descricao': dados['descricao'],
-        'vin': dados['vin']
+def registrar_entrada():
+    data = request.json
+    componente = {
+        "id": str(uuid.uuid4()),
+        "codigo": data['codigo'],
+        "descricao": data['descricao'],
+        "vin": data['vin'],  # Veículo em que a peça foi usada
+        "data_entrada": data.get('data_entrada')
     }
-    pecas_usadas.append(peca)
-    return jsonify(peca), 201
+    componentes.append(componente)
+    return jsonify({"mensagem": "Componente registrado com sucesso", "componente": componente}), 201
 
-@app.route('/rastreio/<vin>', methods=['GET'])
-def rastrear_pecas(vin):
-    """
-    Retorna todas as peças utilizadas no veículo com o VIN informado.
-    """
-    usadas = [p for p in pecas_usadas if p['vin'] == vin]
-    return jsonify(usadas), 200
+@app.route('/entrada', methods=['GET'])
+def listar_entradas():
+    return jsonify(componentes)
+
+@app.route('/entrada/<vin>', methods=['GET'])
+def listar_por_vin(vin):
+    resultado = [c for c in componentes if c['vin'] == vin]
+    return jsonify(resultado)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5003)

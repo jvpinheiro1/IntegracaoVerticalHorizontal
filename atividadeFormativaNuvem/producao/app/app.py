@@ -15,7 +15,7 @@ def criar_ordem():
         'id': contador_id,
         'modelo': dados.get('modelo'),
         'status': 'em produção',
-        'etapas': []  # Lista de etapas de montagem
+        'etapas': []
     }
     ordens.append(ordem)
     contador_id += 1
@@ -45,7 +45,12 @@ def adicionar_etapa(ordem_id):
             return jsonify({'mensagem': 'Etapa adicionada com sucesso', 'ordem': ordem}), 200
     return jsonify({'erro': 'Ordem não encontrada'}), 404
 
-
+@app.route('/ordens/<int:ordem_id>/etapas', methods=['GET'])
+def listar_etapas(ordem_id):
+    for ordem in ordens:
+        if ordem['id'] == ordem_id:
+            return jsonify(ordem['etapas'])
+    return jsonify({'erro': 'Ordem não encontrada'}), 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)

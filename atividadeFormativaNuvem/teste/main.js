@@ -148,13 +148,7 @@ async function dashboard() {
     if (!resp.ok) throw new Error('Erro ao buscar dashboard');
     const dados = await resp.json();
 
-    console.log('Dados do dashboard:', dados);  // <<< veja no console do navegador o formato exato
-
     const dash = document.getElementById('dashboard');
-
-    // Ajuste aqui os campos conforme o retorno real
-    const producao = dados.producao || dados.producao || {};
-    const qualidade = dados.qualidade || {};
 
     dash.innerHTML = `
       <style>
@@ -170,16 +164,15 @@ async function dashboard() {
           padding: 20px;
           flex: 1 1 250px;
           min-width: 250px;
+          font-family: Arial, sans-serif;
         }
         .card h3 {
           margin-top: 0;
           color: #333;
-          font-family: Arial, sans-serif;
         }
         .card ul {
           list-style: none;
           padding-left: 0;
-          font-family: Arial, sans-serif;
         }
         .card ul li {
           margin-bottom: 8px;
@@ -191,18 +184,17 @@ async function dashboard() {
       <div class="card">
         <h3>Indicadores de Produção</h3>
         <ul>
-          <li><strong>Total de Ordens:</strong> ${producao.total_ordens || 0}</li>
-          <li><strong>Em Andamento:</strong> ${producao.andamento || 0}</li>
-          <li><strong>Concluídas:</strong> ${producao.concluidas || 0}</li>
+          <li><strong>Total de Ordens:</strong> ${dados.total_ordens || 0}</li>
+          <li><strong>Ordens em Produção:</strong> ${dados.ordens_em_producao || 0}</li>
+          <li><strong>Total de Peças:</strong> ${dados.total_pecas || 0}</li>
         </ul>
       </div>
 
       <div class="card">
         <h3>Indicadores de Qualidade</h3>
         <ul>
-          <li><strong>Inspeções Totais:</strong> ${qualidade.total_inspecoes || 0}</li>
-          <li><strong>Não Conformes:</strong> ${qualidade.nao_conformes || 0}</li>
-          <li><strong>Conformidade:</strong> ${qualidade.percentual_conformidade != null ? qualidade.percentual_conformidade + '%' : 'N/A'}</li>
+          <li><strong>Total de Inspeções:</strong> ${dados.total_inspecoes || 0}</li>
+          <!-- Se você tiver mais dados da qualidade, inclua aqui -->
         </ul>
       </div>
     `;
@@ -212,6 +204,7 @@ async function dashboard() {
     console.error(error);
   }
 }
+
 
 
 // Inicialização
